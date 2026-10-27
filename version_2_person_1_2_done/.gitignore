@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+# large generated data (re-create with python -m src.data_prep)
+data/audio/
+data/*.db
+outputs/models/
+# keep the small sample folder and CSV outputs
+!data/sample_audio/
