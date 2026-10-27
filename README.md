@@ -81,9 +81,26 @@ python -m src.database             # optional: check the database
 
 ## 2. Speech-to-text (ASR)
 
-to be done by person 2
+We use **faster-whisper** (a fast CPU implementation of OpenAI Whisper) with two pretrained English models,
+`tiny.en` and `base.en`, so that two ASR systems can be compared. Nothing is trained.
 
-_Planned content: how the speech-to-text step works and how to run it._
+For each clip `src/transcribe.py`:
+
+1. decodes the audio and runs the model (`beam_size=5`, language `en`);
+2. normalises the text (lowercase, no punctuation) so it can be compared with the LibriSpeech transcript;
+3. computes a **confidence** score = duration-weighted `exp(avg_logprob)` over the segments (0 to 1);
+4. writes **notes** (`empty transcript`, `low confidence` when confidence < 0.60);
+5. saves the result to the database in batches, so an interrupted run can simply be started again (finished clips are skipped).
+
+```bash
+python -m src.transcribe --model tiny.en
+python -m src.transcribe --model base.en
+python -m src.transcribe --model tiny.en --limit 5     # quick test
+```
+
+Outputs: `outputs/transcripts_tiny.en.csv` / `.txt` and `outputs/transcripts_base.en.csv` / `.txt`
+(CSV columns: clip_id, filename, condition, snr_db, true_text, predicted_text, confidence, notes).
+On a normal laptop CPU, expect roughly 10 to 30 minutes per model for the default 240 clips.
 
 ## 3. WER evaluation and EDA
 
