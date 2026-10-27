@@ -104,6 +104,29 @@ On a normal laptop CPU, expect roughly 10 to 30 minutes per model for the defaul
 
 ## 3. WER evaluation and EDA
 
-to be done by person 3
+### Word error rate
 
-_Planned content: WER evaluation, EDA and current limitations._
+`WER = (substitutions + deletions + insertions) / words in the true transcript`, computed per clip with
+`jiwer` after normalising both texts. We report the mean per-clip WER and the corpus WER (total errors / total words).
+
+```bash
+python -m src.metrics        # writes WER to the database, outputs/wer_per_clip.csv, outputs/wer_summary.csv
+```
+
+### Exploratory data analysis
+
+```bash
+python -m src.eda
+```
+
+Creates `outputs/eda_summary.txt` (counts, describe() tables, missing values, top error examples),
+`outputs/error_examples.csv` (15 worst clips with true vs predicted text) and the plots in `outputs/plots/`:
+clip duration, word count, transcript length vs duration, WER by condition and ASR model, and confidence vs WER.
+
+### Limitations (so far)
+
+* LibriSpeech is read book speech: clean, mostly American / British, so it is easier than real conversations.
+* The subset is small (60 clips x 4 conditions), so differences between models can be noisy.
+* LibriSpeech writes numbers as words while Whisper may output digits, which counts as an error in WER.
+* Noise is synthetic white noise; real background noise (traffic, crowds) behaves differently.
+* Everything runs on CPU with small Whisper models; larger models would be more accurate but slower.
