@@ -29,6 +29,11 @@ speech-to-text-project/
     |-- transcribe.py      (person 2)
     |-- metrics.py         (person 3)
     |-- eda.py             (person 3)
+    |-- text_tasks.py      (person 1)
+    |-- features.py        (person 2)
+    |-- train_model.py     (person 2)
+    |-- evaluate.py        (person 3)
+    |-- compare_conditions.py(person 3)
 ```
 
 ### Dataset
@@ -130,3 +135,32 @@ clip duration, word count, transcript length vs duration, WER by condition and A
 * LibriSpeech writes numbers as words while Whisper may output digits, which counts as an error in WER.
 * Noise is synthetic white noise; real background noise (traffic, crowds) behaves differently.
 * Everything runs on CPU with small Whisper models; larger models would be more accurate but slower.
+
+## 4. Text analysis (keyword detection and answer matching)
+
+```bash
+python -m src.text_tasks
+```
+
+**Keyword detection.** The 20 most common content words (document frequency, stop words and words shorter than 4 letters removed)
+of the true transcripts become the keyword list (`outputs/keywords.txt`). For each clip, a keyword counts as present if it
+appears in the transcript. The *true* transcript is the ground truth and the *predicted* transcript is the detection, so we get
+true positives, false positives and false negatives, and from them **precision, recall and F1** per ASR model and condition
+(`outputs/keyword_metrics.csv`) and per keyword (`outputs/keyword_per_word.csv`).
+
+**Matching to the expected answer.** Each predicted transcript is compared with the expected (true) transcript using
+`difflib.SequenceMatcher` similarity. A clip is an *exact match* when the normalised texts are identical and a *fuzzy match* when
+similarity >= 0.85. We report exact accuracy, fuzzy accuracy and mean similarity
+(`outputs/matching_results.csv`, `outputs/matching_summary.csv`).
+
+## 5. Features, feature reduction and machine-learning models
+
+to be done by person 2
+
+_Planned content: features, feature reduction and machine-learning models._
+
+## 6. Evaluation, extension and results
+
+to be done by person 3
+
+_Planned content: final evaluation, extension, results, limitations and team contributions._
